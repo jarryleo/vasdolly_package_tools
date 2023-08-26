@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:vasdolly_package_tools/page/channel/channel_view.dart';
 import 'package:vasdolly_package_tools/page/home/home_view.dart';
 import 'package:vasdolly_package_tools/page/sign/sign_view.dart';
@@ -32,7 +33,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             Tab(text: 'Channel'),
           ],
           onTap: (index) {
-            print('index: $index');
+            if (kDebugMode) {
+              print('index: $index');
+            }
           },
         ),
       ),

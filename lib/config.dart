@@ -17,8 +17,8 @@ class Config{
     // Must add this line.
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
-      size: Size(800, 600),
-      minimumSize: Size(800, 600),
+      size: Size(800, 800),
+      minimumSize: Size(800, 800),
       center: true,
       skipTaskbar: false,
     );

@@ -24,14 +24,20 @@ class _HomePageState extends State<HomePage>
       child: Card(
         child: Container(
           width: 720,
-          height: 420,
+          height: 620,
           padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               WidgetChooseFile(
+                controller: logic.vasDollyPath,
+                hintText: 'VasDolly.jar file path',
+                allowedExtensions: const ['jar'],
+              ),
+              const SizedBox(height: 32),
+              WidgetChooseFile(
                 controller: logic.signedApkPath,
-                hintText: 'Choose a signed apk file',
+                hintText: 'Choose a signed apk',
                 allowedExtensions: const ['apk'],
               ),
               const SizedBox(height: 32),
@@ -41,7 +47,7 @@ class _HomePageState extends State<HomePage>
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
-                  logic.signApk();
+                  logic.buildChannelApk();
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(200, 50),

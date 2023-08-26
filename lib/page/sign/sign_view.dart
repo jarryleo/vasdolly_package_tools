@@ -24,11 +24,40 @@ class _SignPageState extends State<SignPage>
       child: Card(
         child: Container(
           width: 720,
-          height: 420,
+          height: 620,
           padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              KeyInputWidget(
+                tips: 'unsigned apk path:',
+                controller: logic.unsignedApkPath,
+                extraWidget: IconButton(
+                  onPressed: () async {
+                    final result = await FilePicker.platform.pickFiles();
+                    if (result != null) {
+                      logic.unsignedApkPath.text =
+                          result.files.single.path ?? '';
+                    }
+                  },
+                  icon: const Icon(Icons.folder_open),
+                ),
+              ),
+              const SizedBox(height: 16),
+              KeyInputWidget(
+                tips: 'apksigner path:',
+                controller: logic.apkSignerPath,
+                extraWidget: IconButton(
+                  onPressed: () async {
+                    final result = await FilePicker.platform.pickFiles();
+                    if (result != null) {
+                      logic.apkSignerPath.text = result.files.single.path ?? '';
+                    }
+                  },
+                  icon: const Icon(Icons.folder_open),
+                ),
+              ),
+              const SizedBox(height: 16),
               KeyInputWidget(
                 tips: 'key store path:',
                 controller: logic.keyStorePath,
@@ -42,20 +71,35 @@ class _SignPageState extends State<SignPage>
                   icon: const Icon(Icons.folder_open),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
               KeyInputWidget(
                 tips: 'key store password:',
                 controller: logic.keyStorePassword,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
               KeyInputWidget(
                 tips: 'alias:',
                 controller: logic.aliasName,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
               KeyInputWidget(
                 tips: 'alias password:',
                 controller: logic.aliasPassword,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  logic.signApk();
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                ),
+                child: const Text(
+                  'sign apk',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
               ),
             ],
           ),

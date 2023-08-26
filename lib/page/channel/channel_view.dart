@@ -23,7 +23,7 @@ class _ChannelPageState extends State<ChannelPage>
       child: Card(
         child: Container(
           width: 720,
-          height: 420,
+          height: 620,
           padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -31,6 +31,18 @@ class _ChannelPageState extends State<ChannelPage>
               WidgetChooseFile(
                 controller: logic.channelPath,
                 hintText: 'Choose a channel file',
+              ),
+              const SizedBox(height: 32),
+              Expanded(
+                child: Obx(() {
+                  return ListView(
+                    children: logic.channelList.map((e) {
+                      return ListTile(
+                        title: Text(e),
+                      );
+                    }).toList(),
+                  );
+                }),
               ),
             ],
           ),
