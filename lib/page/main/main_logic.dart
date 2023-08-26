@@ -48,12 +48,52 @@ class MainLogic extends GetxController {
   }
 
   void signApk() {
+    if (unsignedApkPath.text.isEmpty) {
+      Get.snackbar('提示', '请先选择未签名的apk');
+      return;
+    }
+    if (apkSignerPath.text.isEmpty) {
+      Get.snackbar('提示', '请先选择签名工具');
+      return;
+    }
+    if (keyStorePath.text.isEmpty) {
+      Get.snackbar('提示', '请先选择签名文件');
+      return;
+    }
+    if (keyStorePassword.text.isEmpty) {
+      Get.snackbar('提示', '请先输入签名文件密码');
+      return;
+    }
+    if (aliasName.text.isEmpty) {
+      Get.snackbar('提示', '请先输入别名');
+      return;
+    }
+    if (aliasPassword.text.isEmpty) {
+      Get.snackbar('提示', '请先输入别名密码');
+      return;
+    }
     showLoading();
     _saveConfig();
     _sign();
   }
 
   void buildChannelApk() {
+    if (channelList.isEmpty) {
+      Get.snackbar('提示', '请先选择渠道文件');
+      return;
+    }
+    if (channelList.length == 1) {
+      Get.snackbar('提示', '渠道文件只有一个，无需生成渠道包');
+      return;
+    }
+    if (signedApkPath.text.isEmpty) {
+      Get.snackbar('提示', '请先选择已签名的apk');
+      return;
+    }
+    if (outputDirPath.text.isEmpty) {
+      Get.snackbar('提示', '请先选择输出目录');
+      return;
+    }
     showLoading();
     _saveConfig();
     _buildChannel();
