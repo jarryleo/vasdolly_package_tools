@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vasdolly_package_tools/page/main/main_logic.dart';
-import 'package:vasdolly_package_tools/widget/widget_choose_directory.dart';
 import 'package:vasdolly_package_tools/widget/widget_choose_file.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,9 +40,10 @@ class _HomePageState extends State<HomePage>
                 allowedExtensions: const ['apk'],
               ),
               const SizedBox(height: 32),
-              WidgetChooseDirectory(
+              WidgetChooseFile(
                   controller: logic.outputDirPath,
-                  hintText: 'Choose a output directory'),
+                  hintText: 'Choose a output directory',
+                  isDirectory: true),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {

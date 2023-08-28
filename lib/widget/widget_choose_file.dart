@@ -3,12 +3,18 @@ import 'package:file_picker/file_picker.dart';
 import '../includes.dart';
 
 class WidgetChooseFile extends StatefulWidget {
-  const WidgetChooseFile(
-      {super.key, this.controller, this.hintText, this.allowedExtensions});
+  const WidgetChooseFile({
+    super.key,
+    this.controller,
+    this.hintText,
+    this.allowedExtensions,
+    this.isDirectory = false,
+  });
 
   final TextEditingController? controller;
   final String? hintText;
   final List<String>? allowedExtensions;
+  final bool isDirectory;
 
   @override
   State<WidgetChooseFile> createState() => _WidgetChooseFileState();
@@ -17,36 +23,54 @@ class WidgetChooseFile extends StatefulWidget {
 class _WidgetChooseFileState extends State<WidgetChooseFile> {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: widget.controller,
-            decoration: InputDecoration(
-              hintText: widget.hintText ?? 'Choose a file',
-              border: const OutlineInputBorder(),
+    return Container(
+      padding: const EdgeInsets.only(left: 16, right: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: widget.controller,
+              decoration: InputDecoration(
+                hintText: widget.hintText ?? 'Choose a file',
+                border: InputBorder.none,
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 32),
-        IconButton(
-          onPressed: () async {
-            FilePickerResult? result;
-            if (widget.allowedExtensions == null) {
-              result = await FilePicker.platform.pickFiles();
-            } else {
-              result = await FilePicker.platform.pickFiles(
-                type: FileType.custom,
-                allowedExtensions: widget.allowedExtensions,
-              );
-            }
-            if (result != null) {
-              widget.controller?.text = result.files.single.path ?? '';
-            }
-          },
-          icon: const Icon(Icons.folder_open),
-        ),
-      ],
+          const SizedBox(width: 16),
+          IconButton(
+            onPressed: () {
+              chooseFile();
+            },
+            icon: const Icon(Icons.folder_open),
+          ),
+        ],
+      ),
     );
+  }
+
+  Future<void> chooseFile() async {
+    if (widget.isDirectory) {
+      final result = await FilePicker.platform.getDirectoryPath();
+      if (result != null) {
+        widget.controller?.text = result;
+      }
+      return;
+    }
+    FilePickerResult? result;
+    if (widget.allowedExtensions == null) {
+      result = await FilePicker.platform.pickFiles();
+    } else {
+      result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: widget.allowedExtensions,
+      );
+    }
+    if (result != null) {
+      widget.controller?.text = result.files.single.path ?? '';
+    }
   }
 }
