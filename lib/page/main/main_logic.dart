@@ -82,10 +82,6 @@ class MainLogic extends GetxController {
       Get.snackbar('提示', '请先选择渠道文件');
       return;
     }
-    if (channelList.length == 1) {
-      Get.snackbar('提示', '渠道文件只有一个，无需生成渠道包');
-      return;
-    }
     if (signedApkPath.text.isEmpty) {
       Get.snackbar('提示', '请先选择已签名的apk');
       return;
@@ -121,6 +117,13 @@ class MainLogic extends GetxController {
   void _readConfig() {
     GetStorage box = GetStorage();
     vasDollyPath.text = box.read(DataStoreKeys.keyVasDollyPath) ?? '';
+    if (vasDollyPath.text.isEmpty) {
+      //判断当前程序目录下是否存在VasDolly.jar，存在的话赋值路径到输入框
+      var file = File('VasDolly.jar');
+      if (file.existsSync()) {
+        vasDollyPath.text = file.absolute.path;
+      }
+    }
     channelPath.text = box.read(DataStoreKeys.keyChannelPath) ?? '';
     apkSignerPath.text = box.read(DataStoreKeys.keyApkSignerPath) ?? '';
     keyStorePath.text = box.read(DataStoreKeys.keyStorePath) ?? '';
