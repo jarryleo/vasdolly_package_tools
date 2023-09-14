@@ -1,3 +1,5 @@
+import 'package:vasdolly_package_tools/theme/colors.dart';
+
 import '../includes.dart';
 
 class KeyInputWidget extends StatefulWidget {
@@ -27,8 +29,8 @@ class _KeyInputWidgetState extends State<KeyInputWidget> {
           child: Container(
             padding: const EdgeInsets.only(left: 16, right: 8),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: QColors.mainColor),
+              borderRadius: BorderRadius.circular(30),
             ),
             child: Row(
               children: [

@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:vasdolly_package_tools/theme/colors.dart';
 
 import '../includes.dart';
 
@@ -37,7 +38,7 @@ class _WidgetChooseDirectoryState extends State<WidgetChooseDirectory> {
               widget.controller?.text = result;
             }
           },
-          icon: const Icon(Icons.folder_open),
+          icon: const Icon(Icons.folder_open, color: QColors.mainColor),
         ),
       ],
     );

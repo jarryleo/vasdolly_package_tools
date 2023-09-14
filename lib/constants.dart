@@ -7,4 +7,7 @@ abstract class DataStoreKeys {
   static const String keyAlias = 'keyAlias';
   static const String keyAliasPwd = 'keyAliasPwd';
   static const String keyChannelPath = 'keyChannelPath';
+
+  //储存签名信息列表
+  static const String keySignList = 'keySignList';
 }

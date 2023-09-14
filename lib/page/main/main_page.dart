@@ -12,34 +12,36 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  var mainLogic = Get.find<MainLogic>();
+  final CustomTabBarController _tabBarController = CustomTabBarController();
   final PageController _pageController =
       PageController(initialPage: 0, keepPage: true);
-  final CustomTabBarController _tabBarController = CustomTabBarController();
-  var mainLogic = Get.find<MainLogic>();
 
   Widget getTabBarChild(BuildContext context, int index) {
     return TabBarItem(
-        transform: ColorsTransform(
-          highlightColor: Colors.white,
-          normalColor: Colors.black,
-          builder: (context, color) {
-            return Container(
-              padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
-              alignment: Alignment.center,
-              constraints: const BoxConstraints(minHeight: 50),
-              child: (Text(
-                mainLogic.tabs[index],
-                style: TextStyle(fontSize: 16, color: color),
-              )),
-            );
-          },
-        ),
-        index: index);
+      index: index,
+      transform: ColorsTransform(
+        highlightColor: QColors.mainText,
+        normalColor: QColors.mainText,
+        builder: (context, color) {
+          return Container(
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+            alignment: Alignment.center,
+            constraints: const BoxConstraints(minHeight: 50),
+            child: (Text(
+              mainLogic.tabs[index],
+              style: TextStyle(fontSize: 16, color: color),
+            )),
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: QColors.bodyBg,
       body: Row(
         children: [
           Column(
@@ -55,27 +57,36 @@ class _MainPageState extends State<MainPage> {
               ),
               const SizedBox(height: 20),
               Flexible(
-                child: CustomTabBar(
-                  tabBarController: _tabBarController,
-                  width: 150,
-                  direction: Axis.vertical,
-                  itemCount: mainLogic.tabs.length,
-                  builder: getTabBarChild,
-                  indicator: RoundIndicator(
-                    color: QColors.mainColor,
-                    radius: const BorderRadius.only(
-                      topRight: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: CustomTabBar(
+                    width: 150,
+                    direction: Axis.vertical,
+                    pageController: _pageController,
+                    tabBarController: _tabBarController,
+                    itemCount: mainLogic.tabs.length,
+                    builder: getTabBarChild,
+                    indicator: RoundIndicator(
+                      color: QColors.contentBg,
+                      radius: const BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        bottomLeft: Radius.circular(8),
+                      ),
                     ),
                   ),
-                  pageController: _pageController,
                 ),
               ),
+              const Text('by: Jarry Leo'),
+              const SizedBox(height: 16),
             ],
           ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
+            child: Container(
+              margin: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: QColors.contentBg,
+              ),
               child: PageView.builder(
                 allowImplicitScrolling: true,
                 scrollDirection: Axis.vertical,

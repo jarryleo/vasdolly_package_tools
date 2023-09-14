@@ -20,32 +20,28 @@ class _ChannelPageState extends State<ChannelPage>
     super.build(context);
     final logic = Get.find<GlobalLogic>();
     return Center(
-      child: Card(
-        child: Container(
-          width: 720,
-          height: 620,
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              WidgetChooseFile(
-                controller: logic.channelPath,
-                hintText: 'Choose a channel file',
-              ),
-              const SizedBox(height: 32),
-              Expanded(
-                child: Obx(() {
-                  return ListView(
-                    children: logic.channelList.map((e) {
-                      return ListTile(
-                        title: Text(e),
-                      );
-                    }).toList(),
-                  );
-                }),
-              ),
-            ],
-          ),
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            WidgetChooseFile(
+              controller: logic.channelPath,
+              hintText: 'Choose a channel file',
+            ),
+            const SizedBox(height: 32),
+            Expanded(
+              child: Obx(() {
+                return ListView(
+                  children: logic.channelList.map((e) {
+                    return ListTile(
+                      title: Text(e),
+                    );
+                  }).toList(),
+                );
+              }),
+            ),
+          ],
         ),
       ),
     );

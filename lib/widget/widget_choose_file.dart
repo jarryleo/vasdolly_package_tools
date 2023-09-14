@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:vasdolly_package_tools/theme/colors.dart';
 
 import '../includes.dart';
 
@@ -24,10 +25,10 @@ class _WidgetChooseFileState extends State<WidgetChooseFile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 16, right: 8),
+      padding: const EdgeInsets.only(left: 16, right: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: QColors.mainColor),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
         children: [
@@ -45,7 +46,10 @@ class _WidgetChooseFileState extends State<WidgetChooseFile> {
             onPressed: () {
               chooseFile();
             },
-            icon: const Icon(Icons.folder_open),
+            icon: const Icon(
+              Icons.folder_open,
+              color: QColors.mainColor,
+            ),
           ),
         ],
       ),
