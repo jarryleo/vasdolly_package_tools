@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vasdolly_package_tools/page/main/main_logic.dart';
+import 'package:vasdolly_package_tools/page/main/global_logic.dart';
 import 'package:vasdolly_package_tools/widget/widget_choose_file.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final logic = Get.find<MainLogic>();
+    final logic = Get.find<GlobalLogic>();
     return Center(
       child: Card(
         child: Container(

@@ -1,4 +1,4 @@
-import 'package:vasdolly_package_tools/page/main/main_logic.dart';
+import 'package:vasdolly_package_tools/page/main/global_logic.dart';
 import 'package:vasdolly_package_tools/widget/widget_choose_file.dart';
 
 import '../../includes.dart';
@@ -18,7 +18,7 @@ class _ChannelPageState extends State<ChannelPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final logic = Get.find<MainLogic>();
+    final logic = Get.find<GlobalLogic>();
     return Center(
       child: Card(
         child: Container(

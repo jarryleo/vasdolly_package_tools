@@ -29,7 +29,10 @@ class _WidgetChooseDirectoryState extends State<WidgetChooseDirectory> {
         const SizedBox(width: 32),
         IconButton(
           onPressed: () async {
-            final result = await FilePicker.platform.getDirectoryPath();
+            final result = await FilePicker.platform.getDirectoryPath(
+              dialogTitle: widget.hintText ?? 'Choose a directory',
+              initialDirectory: widget.controller?.text ?? '',
+            );
             if (result != null) {
               widget.controller?.text = result;
             }

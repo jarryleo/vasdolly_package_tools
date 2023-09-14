@@ -1,5 +1,5 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:vasdolly_package_tools/page/main/main_logic.dart';
+import 'package:vasdolly_package_tools/page/main/global_logic.dart';
 import 'package:vasdolly_package_tools/widget/widget_key_input.dart';
 
 import '../../includes.dart';
@@ -19,7 +19,7 @@ class _SignPageState extends State<SignPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final logic = Get.find<MainLogic>();
+    final logic = Get.find<GlobalLogic>();
     return Center(
       child: Card(
         child: Container(
