@@ -7,7 +7,7 @@ class QColors {
   ///容器颜色
   static const Color contentBg = Color(0xFFF6F6F6);
   ///面板颜色
-  static const Color panelBg = Color(0xFFA1AFC9);
+  static const Color panelBg = Color(0xFFEEEEEE);
   ///主要颜色
   static const Color mainColor = Color(0xFF003460);
   ///主要文本

@@ -24,6 +24,7 @@ class _WidgetChooseDirectoryState extends State<WidgetChooseDirectory> {
             decoration: InputDecoration(
               hintText: widget.hintText ?? 'Choose a directory',
               border: const OutlineInputBorder(),
+              isDense: true,
             ),
           ),
         ),

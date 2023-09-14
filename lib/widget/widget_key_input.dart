@@ -27,6 +27,7 @@ class _KeyInputWidgetState extends State<KeyInputWidget> {
         Expanded(
           flex: 2,
           child: Container(
+            constraints: const BoxConstraints(minHeight: 40),
             padding: const EdgeInsets.only(left: 16, right: 8),
             decoration: BoxDecoration(
               border: Border.all(color: QColors.mainColor),
@@ -39,6 +40,7 @@ class _KeyInputWidgetState extends State<KeyInputWidget> {
                     controller: widget.controller,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
+                      isDense: true,
                     ),
                   ),
                 ),

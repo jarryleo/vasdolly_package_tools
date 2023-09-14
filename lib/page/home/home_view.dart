@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage>
             ),
             const SizedBox(height: 32),
             WidgetChooseFile(
-              controller: logic.signedApkPath,
+              controller: logic.apkPath,
               hintText: 'Choose a signed apk',
               allowedExtensions: const ['apk'],
             ),
@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage>
             const SizedBox(height: 32),
             CButton(
               text: 'build channel apk',
-              size: 40,
+              size: 48,
               fullWidthButton: true,
               onPressed: () {
                 logic.buildChannelApk();

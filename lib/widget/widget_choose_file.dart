@@ -25,6 +25,7 @@ class _WidgetChooseFileState extends State<WidgetChooseFile> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: const BoxConstraints(minHeight: 40),
       padding: const EdgeInsets.only(left: 16, right: 5),
       decoration: BoxDecoration(
         border: Border.all(color: QColors.mainColor),
@@ -38,7 +39,9 @@ class _WidgetChooseFileState extends State<WidgetChooseFile> {
               decoration: InputDecoration(
                 hintText: widget.hintText ?? 'Choose a file',
                 border: InputBorder.none,
+                isDense: true,
               ),
+              style: const TextStyle(color: QColors.mainColor),
             ),
           ),
           const SizedBox(width: 16),

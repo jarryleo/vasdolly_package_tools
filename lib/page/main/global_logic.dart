@@ -4,23 +4,22 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:vasdolly_package_tools/constants.dart';
+import 'package:vasdolly_package_tools/dialog/choose_sign_dialog.dart';
+import 'package:vasdolly_package_tools/ext/string_ext.dart';
+import 'package:vasdolly_package_tools/page/sign/sign_info.dart';
 
 import '../../includes.dart';
 
 class GlobalLogic extends GetxController {
   /// apk相关
   TextEditingController vasDollyPath = TextEditingController();
-  TextEditingController signedApkPath = TextEditingController();
   TextEditingController outputDirPath = TextEditingController();
   TextEditingController channelPath = TextEditingController();
   TextEditingController apkSignerPath = TextEditingController();
+  TextEditingController apkPath = TextEditingController();
 
-  /// 签名相关
-  TextEditingController unsignedApkPath = TextEditingController();
-  TextEditingController keyStorePath = TextEditingController();
-  TextEditingController keyStorePassword = TextEditingController();
-  TextEditingController aliasName = TextEditingController();
-  TextEditingController aliasPassword = TextEditingController();
+  ///签名信息
+  SignInfo signInfo = SignInfo();
 
   ///频道列表
   var channelList = [].obs;
@@ -48,46 +47,52 @@ class GlobalLogic extends GetxController {
   }
 
   void signApk() {
-    if (unsignedApkPath.text.isEmpty) {
-      Get.snackbar('提示', '请先选择未签名的apk');
+    if (apkPath.text.isEmpty) {
+      '请先选择未签名的apk'.showSnackBar();
       return;
     }
     if (apkSignerPath.text.isEmpty) {
-      Get.snackbar('提示', '请先选择签名工具');
+      '请先选择签名工具'.showSnackBar();
       return;
     }
-    if (keyStorePath.text.isEmpty) {
-      Get.snackbar('提示', '请先选择签名文件');
-      return;
-    }
-    if (keyStorePassword.text.isEmpty) {
-      Get.snackbar('提示', '请先输入签名文件密码');
-      return;
-    }
-    if (aliasName.text.isEmpty) {
-      Get.snackbar('提示', '请先输入别名');
-      return;
-    }
-    if (aliasPassword.text.isEmpty) {
-      Get.snackbar('提示', '请先输入别名密码');
-      return;
-    }
+
     showLoading();
     _saveConfig();
     _sign();
   }
 
-  void buildChannelApk() {
+  Future<void> buildChannelApk() async {
+    if (apkPath.text.isEmpty) {
+      '请选择要打渠道包的apk'.showSnackBar();
+      return;
+    }
+
+    var path = apkPath.text;
+    bool fileExists = await File(path).exists();
+    if (!fileExists) {
+      'apk路径错误'.showToast();
+      return;
+    }
+
+    //判断apk是否签名
+    showLoading();
+    bool isSign = await _checkSign();
+    if (!isSign) {
+      //弹出选择签名文件弹框 todo
+      SmartDialog.show(builder: (context) {
+        return const ChooseSignInfoDialog();
+      });
+      hideLoading();
+      return;
+    }
+
     if (channelList.isEmpty) {
-      Get.snackbar('提示', '请先选择渠道文件');
+      '请先配置渠道'.showSnackBar();
       return;
     }
-    if (signedApkPath.text.isEmpty) {
-      Get.snackbar('提示', '请先选择已签名的apk');
-      return;
-    }
+
     if (outputDirPath.text.isEmpty) {
-      Get.snackbar('提示', '请先选择输出目录');
+      '请先选择输出目录'.showSnackBar();
       return;
     }
     showLoading();
@@ -108,10 +113,6 @@ class GlobalLogic extends GetxController {
     box.write(DataStoreKeys.keyVasDollyPath, vasDollyPath.text);
     box.write(DataStoreKeys.keyChannelPath, channelPath.text);
     box.write(DataStoreKeys.keyApkSignerPath, apkSignerPath.text);
-    box.write(DataStoreKeys.keyStorePath, keyStorePath.text);
-    box.write(DataStoreKeys.keyStorePwd, keyStorePassword.text);
-    box.write(DataStoreKeys.keyAlias, aliasName.text);
-    box.write(DataStoreKeys.keyAliasPwd, aliasPassword.text);
   }
 
   void _readConfig() {
@@ -126,13 +127,10 @@ class GlobalLogic extends GetxController {
     }
     channelPath.text = box.read(DataStoreKeys.keyChannelPath) ?? '';
     apkSignerPath.text = box.read(DataStoreKeys.keyApkSignerPath) ?? '';
-    keyStorePath.text = box.read(DataStoreKeys.keyStorePath) ?? '';
-    keyStorePassword.text = box.read(DataStoreKeys.keyStorePwd) ?? '';
-    aliasName.text = box.read(DataStoreKeys.keyAlias) ?? '';
-    aliasPassword.text = box.read(DataStoreKeys.keyAliasPwd) ?? '';
   }
 
-  Future<bool> _executeCommand(String command, List<String> params) async {
+  Future<ProcessResult> _executeCommand(
+      String command, List<String> params) async {
     var result = await Process.run(command, params);
     if (kDebugMode) {
       print('command: $command');
@@ -140,7 +138,7 @@ class GlobalLogic extends GetxController {
       print('stdout: ${result.stdout}');
       print('stderr: ${result.stderr}');
     }
-    return result.exitCode == 0;
+    return result;
   }
 
   ///签名apk指令
@@ -154,29 +152,35 @@ class GlobalLogic extends GetxController {
   /// --out $sign_apk $input_apk
   Future<void> _sign() async {
     var cmd = apkSignerPath.text;
-    var singedApkPath =
-        unsignedApkPath.text.replaceFirst('.apk', '_signed.apk');
+    if (cmd.isEmpty) {
+      cmd = 'apksigner.jar'; //配置了环境变量的话
+    }
+    var singedApkPath = apkPath.text.replaceFirst('.apk', '_signed.apk');
+    String keyStore = signInfo.storeFile ?? '';
+    String keyStorePassword = signInfo.storePassword ?? '';
+    String keyAlias = signInfo.keyAlias ?? '';
+    String keyPassword = signInfo.keyPassword ?? '';
     var result = await _executeCommand(cmd, [
       'sign',
       '--v3-signing-enabled',
       'false',
       '--ks',
-      keyStorePath.text,
+      keyStore,
       '--ks-pass',
-      'pass:${keyStorePassword.text}',
+      'pass:$keyStorePassword',
       '--ks-key-alias',
-      aliasName.text,
+      keyAlias,
       '--key-pass',
-      'pass:${aliasPassword.text}',
+      'pass:$keyPassword',
       '--out',
       singedApkPath,
-      unsignedApkPath.text,
+      apkPath.text,
     ]);
-    if (result) {
-      signedApkPath.text = singedApkPath;
-      Get.snackbar('提示', '签名成功');
+    if (result.exitCode == 0) {
+      apkPath.text = singedApkPath;
+      '签名成功'.showSnackBar();
     } else {
-      Get.snackbar('提示', '签名失败');
+      '签名失败'.showSnackBar();
     }
     hideLoading();
   }
@@ -184,20 +188,48 @@ class GlobalLogic extends GetxController {
   /// 构建渠道包
   /// java -jar ./Vasdolly.jar put -c $channel_file  $sign_apk $output_dir
   Future<void> _buildChannel() async {
+    String vasDolly = vasDollyPath.text;
+    if (vasDolly.isEmpty) {
+      vasDolly = 'VasDolly.jar'; //如果设置了环境变量
+    }
     var result = await _executeCommand('java', [
       '-jar',
-      vasDollyPath.text,
+      vasDolly,
       'put',
       '-c',
       channelPath.text,
-      signedApkPath.text,
+      apkPath.text,
       outputDirPath.text,
     ]);
-    if (result) {
-      Get.snackbar('提示', '生成渠道包成功');
+    if (result.exitCode == 0) {
+      '生成渠道包成功'.showSnackBar();
     } else {
-      Get.snackbar('提示', '生成渠道包失败');
+      '生成渠道包失败'.showSnackBar();
     }
     hideLoading();
+  }
+
+  ///检测apk是否已经签名
+  Future<bool> _checkSign() async {
+    var result = await _executeCommand('jarsigner', [
+      '-verify',
+      '-verbose',
+      '-certs',
+      apkPath.text,
+    ]);
+
+    var stdout = result.stdout as String?;
+    if (result.exitCode != 0 || stdout == null) {
+      '检测签名失败，请检测java环境变量是否配置。'.showSnackBar();
+      return false;
+    }
+
+    var notSign = stdout.contains('未签名') || stdout.contains('unsigned');
+    if (notSign) {
+      'apk未签名'.showSnackBar();
+    } else {
+      'apk已签名'.showSnackBar();
+    }
+    return !notSign;
   }
 }
