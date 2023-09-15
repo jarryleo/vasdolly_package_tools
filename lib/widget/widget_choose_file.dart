@@ -62,6 +62,7 @@ class _WidgetChooseFileState extends State<WidgetChooseFile> {
   Future<void> chooseFile() async {
     if (widget.isDirectory) {
       final result = await FilePicker.platform.getDirectoryPath(
+        lockParentWindow: true,
         dialogTitle: widget.hintText,
         initialDirectory: widget.controller?.text,
       );
@@ -73,11 +74,13 @@ class _WidgetChooseFileState extends State<WidgetChooseFile> {
     FilePickerResult? result;
     if (widget.allowedExtensions == null) {
       result = await FilePicker.platform.pickFiles(
+        lockParentWindow: true,
         dialogTitle: widget.hintText,
         initialDirectory: widget.controller?.text,
       );
     } else {
       result = await FilePicker.platform.pickFiles(
+        lockParentWindow: true,
         dialogTitle: widget.hintText,
         type: FileType.custom,
         allowedExtensions: widget.allowedExtensions,

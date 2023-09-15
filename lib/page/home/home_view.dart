@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage>
             const SizedBox(height: 32),
             WidgetChooseFile(
               controller: logic.apkPath,
-              hintText: 'Choose a signed apk',
+              hintText: 'Choose a apk file',
               allowedExtensions: const ['apk'],
             ),
             const SizedBox(height: 32),

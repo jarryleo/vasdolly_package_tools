@@ -1,5 +1,7 @@
 import 'package:vasdolly_package_tools/page/main/global_logic.dart';
-import 'package:vasdolly_package_tools/widget/widget_choose_file.dart';
+import 'package:vasdolly_package_tools/theme/text_styles.dart';
+import 'package:vasdolly_package_tools/widget/panel.dart';
+import 'package:vasdolly_package_tools/widget/widget_key_choose_file.dart';
 
 import '../../includes.dart';
 
@@ -15,6 +17,24 @@ class _ChannelPageState extends State<ChannelPage>
   @override
   bool get wantKeepAlive => true;
 
+  Widget channelFileChoose(GlobalLogic logic) {
+    return Panel(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        WidgetKeyChooseFile(
+          tips: '渠道文件:',
+          controller: logic.channelPath,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'tips:选择渠道文件，文件类型为文本文件，每行一个渠道名称',
+          style: QTextStyles.descStyle(),
+        ),
+      ],
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -23,21 +43,20 @@ class _ChannelPageState extends State<ChannelPage>
       child: Container(
         padding: const EdgeInsets.all(32),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            WidgetChooseFile(
-              controller: logic.channelPath,
-              hintText: 'Choose a channel file',
-            ),
-            const SizedBox(height: 32),
+            channelFileChoose(logic),
+            const SizedBox(height: 16),
             Expanded(
               child: Obx(() {
-                return ListView(
-                  children: logic.channelList.map((e) {
-                    return ListTile(
-                      title: Text(e),
-                    );
-                  }).toList(),
+                return Panel(
+                  child: ListView(
+                    children: logic.channelList.map((e) {
+                      return ListTile(
+                        title: Text(e),
+                      );
+                    }).toList(),
+                  ),
                 );
               }),
             ),

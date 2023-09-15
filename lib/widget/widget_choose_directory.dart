@@ -32,6 +32,7 @@ class _WidgetChooseDirectoryState extends State<WidgetChooseDirectory> {
         IconButton(
           onPressed: () async {
             final result = await FilePicker.platform.getDirectoryPath(
+              lockParentWindow: true,
               dialogTitle: widget.hintText ?? 'Choose a directory',
               initialDirectory: widget.controller?.text ?? '',
             );

@@ -22,11 +22,6 @@ class SignLogic extends GetxController {
     _readSignInfoList();
   }
 
-  @override
-  void onClose() {
-    _saveSignInfoList();
-  }
-
   void checked(SignInfo signInfo) {
     checkedSignInfo = signInfo;
     name.text = signInfo.name ?? '';

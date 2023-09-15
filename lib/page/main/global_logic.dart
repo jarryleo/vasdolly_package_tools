@@ -19,7 +19,7 @@ class GlobalLogic extends GetxController {
   TextEditingController apkPath = TextEditingController();
 
   ///签名信息
-  SignInfo signInfo = SignInfo();
+  var signInfo = SignInfo().obs;
 
   ///频道列表
   var channelList = [].obs;
@@ -74,18 +74,6 @@ class GlobalLogic extends GetxController {
       return;
     }
 
-    //判断apk是否签名
-    showLoading();
-    bool isSign = await _checkSign();
-    if (!isSign) {
-      //弹出选择签名文件弹框 todo
-      SmartDialog.show(builder: (context) {
-        return const ChooseSignInfoDialog();
-      });
-      hideLoading();
-      return;
-    }
-
     if (channelList.isEmpty) {
       '请先配置渠道'.showSnackBar();
       return;
@@ -95,7 +83,24 @@ class GlobalLogic extends GetxController {
       '请先选择输出目录'.showSnackBar();
       return;
     }
+
+    //判断apk是否签名
     showLoading();
+    bool isSign = await _checkSign();
+    if (!isSign) {
+      //弹出选择签名文件弹框
+      SmartDialog.show(
+        clickMaskDismiss: false,
+        builder: (context) {
+          return ChooseSignInfoDialog(
+            apkPath: apkPath.text,
+          );
+        },
+      );
+      hideLoading();
+      return;
+    }
+
     _saveConfig();
     _buildChannel();
   }
@@ -153,13 +158,13 @@ class GlobalLogic extends GetxController {
   Future<void> _sign() async {
     var cmd = apkSignerPath.text;
     if (cmd.isEmpty) {
-      cmd = 'apksigner.jar'; //配置了环境变量的话
+      cmd = 'apksigner'; //配置了环境变量的话
     }
     var singedApkPath = apkPath.text.replaceFirst('.apk', '_signed.apk');
-    String keyStore = signInfo.storeFile ?? '';
-    String keyStorePassword = signInfo.storePassword ?? '';
-    String keyAlias = signInfo.keyAlias ?? '';
-    String keyPassword = signInfo.keyPassword ?? '';
+    String keyStore = signInfo.value.storeFile ?? '';
+    String keyStorePassword = signInfo.value.storePassword ?? '';
+    String keyAlias = signInfo.value.keyAlias ?? '';
+    String keyPassword = signInfo.value.keyPassword ?? '';
     var result = await _executeCommand(cmd, [
       'sign',
       '--v3-signing-enabled',
@@ -225,11 +230,6 @@ class GlobalLogic extends GetxController {
     }
 
     var notSign = stdout.contains('未签名') || stdout.contains('unsigned');
-    if (notSign) {
-      'apk未签名'.showSnackBar();
-    } else {
-      'apk已签名'.showSnackBar();
-    }
     return !notSign;
   }
 }

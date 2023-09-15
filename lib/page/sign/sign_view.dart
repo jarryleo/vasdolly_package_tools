@@ -119,16 +119,9 @@ class _SignPageState extends State<SignPage>
                             children: logic.signList.map((e) {
                               return ListTile(
                                 title: Text(e.name ?? ''),
+                                contentPadding: const EdgeInsets.all(0),
                                 selected: logic.checkedSignInfo == e,
                                 selectedTileColor: QColors.mainText,
-                                shape: const BeveledRectangleBorder(
-                                  side: BorderSide(
-                                    color: QColors.mainColor,
-                                    width: 2,
-                                  ),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8)),
-                                ),
                                 trailing: logic.checkedSignInfo == e
                                     ? IconButton(
                                         onPressed: () {
