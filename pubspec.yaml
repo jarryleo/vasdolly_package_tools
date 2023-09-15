@@ -38,6 +38,7 @@ dependencies:
 
   # 第三方依赖库
   get: ^4.6.5
+  logger: ^2.0.1
   get_storage: ^2.1.1
   file_picker: ^5.3.4
   window_manager: ^0.3.5

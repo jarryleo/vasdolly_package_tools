@@ -46,7 +46,7 @@ class GlobalLogic extends GetxController {
     }
   }
 
-  void signApk() {
+  Future<void> signApk() async {
     if (apkPath.text.isEmpty) {
       '请先选择未签名的apk'.showSnackBar();
       return;
@@ -58,7 +58,9 @@ class GlobalLogic extends GetxController {
 
     showLoading();
     _saveConfig();
-    _sign();
+    await _sign();
+    await _buildChannel();
+    hideLoading();
   }
 
   Future<void> buildChannelApk() async {
@@ -79,6 +81,11 @@ class GlobalLogic extends GetxController {
       return;
     }
 
+    if (apkSignerPath.text.isEmpty) {
+      '请先配置签名'.showSnackBar();
+      return;
+    }
+
     if (outputDirPath.text.isEmpty) {
       '请先选择输出目录'.showSnackBar();
       return;
@@ -88,6 +95,15 @@ class GlobalLogic extends GetxController {
     showLoading();
     bool isSign = await _checkSign();
     if (!isSign) {
+      bool isZipalign = await _checkZipalign();
+      if (!isZipalign) {
+        bool zipAlignResult = await _zipalign();
+        if (!zipAlignResult) {
+          hideLoading();
+          '对齐失败'.showSnackBar();
+          return;
+        }
+      }
       //弹出选择签名文件弹框
       SmartDialog.show(
         clickMaskDismiss: false,
@@ -102,7 +118,8 @@ class GlobalLogic extends GetxController {
     }
 
     _saveConfig();
-    _buildChannel();
+    await _buildChannel();
+    hideLoading();
   }
 
   void showLoading() {
@@ -142,6 +159,7 @@ class GlobalLogic extends GetxController {
       print('params: $params');
       print('stdout: ${result.stdout}');
       print('stderr: ${result.stderr}');
+      print('exitCode: ${result.exitCode}');
     }
     return result;
   }
@@ -187,12 +205,12 @@ class GlobalLogic extends GetxController {
     } else {
       '签名失败'.showSnackBar();
     }
-    hideLoading();
   }
 
   /// 构建渠道包
   /// java -jar ./Vasdolly.jar put -c $channel_file  $sign_apk $output_dir
   Future<void> _buildChannel() async {
+    showLoading();
     String vasDolly = vasDollyPath.text;
     if (vasDolly.isEmpty) {
       vasDolly = 'VasDolly.jar'; //如果设置了环境变量
@@ -211,7 +229,6 @@ class GlobalLogic extends GetxController {
     } else {
       '生成渠道包失败'.showSnackBar();
     }
-    hideLoading();
   }
 
   ///检测apk是否已经签名
@@ -225,11 +242,67 @@ class GlobalLogic extends GetxController {
 
     var stdout = result.stdout as String?;
     if (result.exitCode != 0 || stdout == null) {
-      '检测签名失败，请检测java环境变量是否配置。'.showSnackBar();
+      '检测签名失败，请检查环境变量是否配置。'.showSnackBar();
       return false;
     }
 
     var notSign = stdout.contains('未签名') || stdout.contains('unsigned');
     return !notSign;
+  }
+
+  String getDirFromFilePath(String path) {
+    return File(path).parent.absolute.path;
+  }
+
+  ///检测apk是否对齐
+  Future<bool> _checkZipalign() async {
+    var cmd = '${getDirFromFilePath(apkSignerPath.text)}/zipalign';
+    if (cmd.isEmpty) {
+      cmd = 'zipalign'; //配置了环境变量的话
+    }
+    var result = await _executeCommand(cmd, [
+      '-c',
+      '-v',
+      '4',
+      apkPath.text,
+    ]);
+
+    var stdout = result.stdout as String?;
+    if (result.exitCode != 0 || stdout == null) {
+      '检测对齐失败，请检查环境变量是否配置。'.showSnackBar();
+      return false;
+    }
+    //Verification succesful
+    var succesful = stdout.contains('Verification succesful');
+    return succesful;
+  }
+
+  ///apk对齐
+  Future<bool> _zipalign() async {
+    var cmd = '${getDirFromFilePath(apkSignerPath.text)}/zipalign';
+    if (cmd.isEmpty) {
+      cmd = 'zipalign'; //配置了环境变量的话
+    }
+    var zipalignApkPath = apkPath.text.replaceFirst('.apk', '_zipalign.apk');
+    var result = await _executeCommand(cmd, [
+      '-p',
+      '-f',
+      '-v',
+      '4',
+      apkPath.text,
+      zipalignApkPath,
+    ]);
+
+    var stdout = result.stdout as String?;
+    if (result.exitCode != 0 || stdout == null) {
+      '对齐失败，请检查环境变量是否配置。'.showSnackBar();
+      return false;
+    }
+    //Verification succesful
+    var succesful = stdout.contains('Verification succesful');
+    if (succesful) {
+      apkPath.text = zipalignApkPath;
+    }
+    return succesful;
   }
 }

@@ -13,9 +13,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var mainLogic = Get.find<MainLogic>();
-  final CustomTabBarController _tabBarController = CustomTabBarController();
-  final PageController _pageController =
-      PageController(initialPage: 0, keepPage: true);
 
   Widget getTabBarChild(BuildContext context, int index) {
     return TabBarItem(
@@ -56,14 +53,14 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Flexible(
+              Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: CustomTabBar(
                     width: 150,
                     direction: Axis.vertical,
-                    pageController: _pageController,
-                    tabBarController: _tabBarController,
+                    pageController: mainLogic.pageController,
+                    tabBarController: mainLogic.tabBarController,
                     itemCount: mainLogic.tabs.length,
                     builder: getTabBarChild,
                     indicator: RoundIndicator(
@@ -91,7 +88,7 @@ class _MainPageState extends State<MainPage> {
                 allowImplicitScrolling: true,
                 scrollDirection: Axis.vertical,
                 physics: const NeverScrollableScrollPhysics(),
-                controller: _pageController,
+                controller: mainLogic.pageController,
                 itemCount: mainLogic.pages.length,
                 itemBuilder: (context, index) {
                   return mainLogic.pages[index];
